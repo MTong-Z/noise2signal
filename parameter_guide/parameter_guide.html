@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>parameter_guide</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="parameter_guide_files/libs/clipboard/clipboard.min.js"></script>
+<script src="parameter_guide_files/libs/quarto-html/quarto.js"></script>
+<script src="parameter_guide_files/libs/quarto-html/popper.min.js"></script>
+<script src="parameter_guide_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="parameter_guide_files/libs/quarto-html/anchor.min.js"></script>
+<link href="parameter_guide_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="parameter_guide_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="parameter_guide_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="parameter_guide_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="parameter_guide_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+
+
+
+<section id="denoise-parameter-guide" class="level1">
+<h1>Denoise Parameter Guide</h1>
+<p>This document provides visual comparisons and detailed explanations for each denoising parameter in the <strong>noise2signal</strong> pipeline, optimized for mouse vocalization audio. Use this guide to understand how each parameter affects the denoising result and to help tune them effectively.</p>
+<hr>
+<section id="continuous-mask-parameters" class="level2">
+<h2 class="anchored" data-anchor-id="continuous-mask-parameters">1. Continuous Mask Parameters</h2>
+<section id="alpha" class="level3">
+<h3 class="anchored" data-anchor-id="alpha">1.1 <code>alpha</code></h3>
+<ul>
+<li><strong>Role:</strong> Scales the ridge bandwidth for creating the continuous mask.</li>
+<li><strong>Default:</strong> <code>0.5</code></li>
+<li><strong>Test Value:</strong> <code>1.5</code></li>
+<li><strong>Effect:</strong> Higher values yield broader masks, capturing more surrounding frequencies; lower values focus tightly on the detected ridge.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="parameter_denoise_comparison/alpha/alpha_comparison.png" class="img-fluid figure-img"></p>
+<figcaption>alpha comparison</figcaption>
+</figure>
+</div>
+<p align="center">
+<em>Comparison: <code>alpha=0.5</code> (Default) vs.&nbsp;<code>alpha=1.5</code> (Modified)</em>
+</p>
+</section>
+<section id="keep_ratio" class="level3">
+<h3 class="anchored" data-anchor-id="keep_ratio">1.2 <code>keep_ratio</code></h3>
+<ul>
+<li><strong>Role:</strong> Determines the threshold ratio for the continuous mask’s bandwidth relative to the detected ridge width.</li>
+<li><strong>Default:</strong> <code>0.8</code></li>
+<li><strong>Test Value:</strong> <code>0.4</code></li>
+<li><strong>Effect:</strong> Higher ratios preserve more of the ridge (narrow mask); lower ratios remove more background noise (wider mask).</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="parameter_denoise_comparison/keep_ratio/keep_ratio_comparison.png" class="img-fluid figure-img"></p>
+<figcaption>keep_ratio comparison</figcaption>
+</figure>
+</div>
+<p align="center">
+<em>Comparison: <code>keep_ratio=0.8</code> (Default) vs.&nbsp;<code>keep_ratio=0.4</code> (Modified)</em>
+</p>
+</section>
+<section id="soft_alpha" class="level3">
+<h3 class="anchored" data-anchor-id="soft_alpha">1.3 <code>soft_alpha</code></h3>
+<ul>
+<li><strong>Role:</strong> Bandwidth softening factor for dynamic alpha adjustment.</li>
+<li><strong>Default:</strong> <code>0.001</code></li>
+<li><strong>Test Value:</strong> <code>0.05</code></li>
+<li><strong>Effect:</strong> Higher values create more dynamic bandwidth adjustment based on local ridge properties.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="parameter_denoise_comparison/soft_alpha/soft_alpha_comparison.png" class="img-fluid figure-img"></p>
+<figcaption>soft_alpha comparison</figcaption>
+</figure>
+</div>
+<p align="center">
+<em>Comparison: <code>soft_alpha=0.001</code> (Default) vs.&nbsp;<code>soft_alpha=0.05</code> (Modified)</em>
+</p>
+<hr>
+</section>
+</section>
+<section id="peak-mask-parameters" class="level2">
+<h2 class="anchored" data-anchor-id="peak-mask-parameters">2. Peak Mask Parameters</h2>
+<section id="num_peaks" class="level3">
+<h3 class="anchored" data-anchor-id="num_peaks">2.1 <code>num_peaks</code></h3>
+<ul>
+<li><strong>Role:</strong> Number of spectral peaks to include in the peak-based mask.</li>
+<li><strong>Default:</strong> <code>4</code></li>
+<li><strong>Test Value:</strong> <code>10</code></li>
+<li><strong>Effect:</strong> More peaks capture additional harmonics or noise spikes; fewer peaks focus on the strongest frequencies.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="parameter_denoise_comparison/num_peaks/num_peaks_comparison.png" class="img-fluid figure-img"></p>
+<figcaption>num_peaks comparison</figcaption>
+</figure>
+</div>
+<p align="center">
+<em>Comparison: <code>num_peaks=4</code> (Default) vs.&nbsp;<code>num_peaks=10</code> (Modified)</em>
+</p>
+</section>
+<section id="peak_width_hz" class="level3">
+<h3 class="anchored" data-anchor-id="peak_width_hz">2.2 <code>peak_width_hz</code></h3>
+<ul>
+<li><strong>Role:</strong> Width in Hz around each detected peak for masking.</li>
+<li><strong>Default:</strong> <code>5.0</code></li>
+<li><strong>Test Value:</strong> <code>20.0</code></li>
+<li><strong>Effect:</strong> Broader widths remove more adjacent noise; narrower widths preserve fine frequency detail.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="parameter_denoise_comparison/peak_width_hz/peak_width_hz_comparison.png" class="img-fluid figure-img"></p>
+<figcaption>peak_width_hz comparison</figcaption>
+</figure>
+</div>
+<p align="center">
+<em>Comparison: <code>peak_width_hz=5.0</code> (Default) vs.&nbsp;<code>peak_width_hz=20.0</code> (Modified)</em>
+</p>
+<hr>
+</section>
+</section>
+<section id="activity-detection-parameters" class="level2">
+<h2 class="anchored" data-anchor-id="activity-detection-parameters">3. Activity Detection Parameters</h2>
+<section id="power_threshold_db" class="level3">
+<h3 class="anchored" data-anchor-id="power_threshold_db">3.1 <code>power_threshold_db</code></h3>
+<ul>
+<li><strong>Role:</strong> dB threshold above baseline to mark active regions.</li>
+<li><strong>Default:</strong> <code>6</code></li>
+<li><strong>Test Value:</strong> <code>12</code></li>
+<li><strong>Effect:</strong> Higher thresholds remove low-power background noise; lower thresholds may introduce residual noise.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="parameter_denoise_comparison/power_threshold_db/power_threshold_db_comparison.png" class="img-fluid figure-img"></p>
+<figcaption>power_threshold_db comparison</figcaption>
+</figure>
+</div>
+<p align="center">
+<em>Comparison: <code>power_threshold_db=6</code> (Default) vs.&nbsp;<code>power_threshold_db=12</code> (Modified)</em>
+</p>
+</section>
+<section id="min_segment_length" class="level3">
+<h3 class="anchored" data-anchor-id="min_segment_length">3.2 <code>min_segment_length</code></h3>
+<ul>
+<li><strong>Role:</strong> Minimum length of active segment to be considered valid.</li>
+<li><strong>Default:</strong> <code>15</code></li>
+<li><strong>Test Value:</strong> <code>2</code></li>
+<li><strong>Effect:</strong> Longer segments filter out brief noise bursts; shorter segments preserve transient sounds.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="parameter_denoise_comparison/min_segment_length/min_segment_length_comparison.png" class="img-fluid figure-img"></p>
+<figcaption>min_segment_length comparison</figcaption>
+</figure>
+</div>
+<p align="center">
+<em>Comparison: <code>min_segment_length=15</code> (Default) vs.&nbsp;<code>min_segment_length=2</code> (Modified)</em>
+</p>
+<hr>
+</section>
+</section>
+<section id="ridge-detection-and-reliability-parameters" class="level2">
+<h2 class="anchored" data-anchor-id="ridge-detection-and-reliability-parameters">4. Ridge Detection and Reliability Parameters</h2>
+<section id="drop_db_threshold" class="level3">
+<h3 class="anchored" data-anchor-id="drop_db_threshold">4.1 <code>drop_db_threshold</code></h3>
+<ul>
+<li><strong>Role:</strong> dB drop threshold to mark unreliable ridge points.</li>
+<li><strong>Default:</strong> <code>10</code></li>
+<li><strong>Test Value:</strong> <code>2</code></li>
+<li><strong>Effect:</strong> Higher thresholds are more tolerant of power drops; lower thresholds mark more points as unreliable.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="parameter_denoise_comparison/drop_db_threshold/drop_db_threshold_comparison.png" class="img-fluid figure-img"></p>
+<figcaption>drop_db_threshold comparison</figcaption>
+</figure>
+</div>
+<p align="center">
+<em>Comparison: <code>drop_db_threshold=10</code> (Default) vs.&nbsp;<code>drop_db_threshold=2</code> (Modified)</em>
+</p>
+</section>
+<section id="freq_jump_threshold" class="level3">
+<h3 class="anchored" data-anchor-id="freq_jump_threshold">4.2 <code>freq_jump_threshold</code></h3>
+<ul>
+<li><strong>Role:</strong> Maximum allowed ridge frequency jump in Hz.</li>
+<li><strong>Default:</strong> <code>2000</code></li>
+<li><strong>Test Value:</strong> <code>500</code></li>
+<li><strong>Effect:</strong> Lower values enforce smoother frequency tracking; higher values allow more abrupt frequency changes.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="parameter_denoise_comparison/freq_jump_threshold/freq_jump_threshold_comparison.png" class="img-fluid figure-img"></p>
+<figcaption>freq_jump_threshold comparison</figcaption>
+</figure>
+</div>
+<p align="center">
+<em>Comparison: <code>freq_jump_threshold=2000</code> (Default) vs.&nbsp;<code>freq_jump_threshold=500</code> (Modified)</em>
+</p>
+<hr>
+</section>
+</section>
+<section id="bandwidth-control-parameters" class="level2">
+<h2 class="anchored" data-anchor-id="bandwidth-control-parameters">5. Bandwidth Control Parameters</h2>
+<section id="min_bandwidth" class="level3">
+<h3 class="anchored" data-anchor-id="min_bandwidth">5.1 <code>min_bandwidth</code></h3>
+<ul>
+<li><strong>Role:</strong> Minimum allowed bandwidth in Hz.</li>
+<li><strong>Default:</strong> <code>500.0</code></li>
+<li><strong>Test Value:</strong> <code>50.0</code></li>
+<li><strong>Effect:</strong> Lower values allow tighter frequency selection; higher values ensure broader coverage.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="parameter_denoise_comparison/min_bandwidth/min_bandwidth_comparison.png" class="img-fluid figure-img"></p>
+<figcaption>min_bandwidth comparison</figcaption>
+</figure>
+</div>
+<p align="center">
+<em>Comparison: <code>min_bandwidth=500.0</code> (Default) vs.&nbsp;<code>min_bandwidth=50.0</code> (Modified)</em>
+</p>
+</section>
+<section id="max_bandwidth" class="level3">
+<h3 class="anchored" data-anchor-id="max_bandwidth">5.2 <code>max_bandwidth</code></h3>
+<ul>
+<li><strong>Role:</strong> Maximum allowed bandwidth in Hz.</li>
+<li><strong>Default:</strong> <code>10000.0</code></li>
+<li><strong>Test Value:</strong> <code>20000.0</code></li>
+<li><strong>Effect:</strong> Higher values allow wider frequency selection; lower values constrain bandwidth.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="parameter_denoise_comparison/max_bandwidth/max_bandwidth_comparison.png" class="img-fluid figure-img"></p>
+<figcaption>max_bandwidth comparison</figcaption>
+</figure>
+</div>
+<p align="center">
+<em>Comparison: <code>max_bandwidth=10000.0</code> (Default) vs.&nbsp;<code>max_bandwidth=20000.0</code> (Modified)</em>
+</p>
+</section>
+<section id="bandwidth_smooth_window" class="level3">
+<h3 class="anchored" data-anchor-id="bandwidth_smooth_window">5.3 <code>bandwidth_smooth_window</code></h3>
+<ul>
+<li><strong>Role:</strong> Smoothing window size for bandwidth estimation.</li>
+<li><strong>Default:</strong> <code>7</code></li>
+<li><strong>Test Value:</strong> <code>1</code></li>
+<li><strong>Effect:</strong> Larger windows create smoother bandwidth transitions; smaller windows preserve rapid changes.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="parameter_denoise_comparison/bandwidth_smooth_window/bandwidth_smooth_window_comparison.png" class="img-fluid figure-img"></p>
+<figcaption>bandwidth_smooth_window comparison</figcaption>
+</figure>
+</div>
+<p align="center">
+<em>Comparison: <code>bandwidth_smooth_window=7</code> (Default) vs.&nbsp;<code>bandwidth_smooth_window=1</code> (Modified)</em>
+</p>
+<hr>
+</section>
+</section>
+<section id="mask-combination-parameters" class="level2">
+<h2 class="anchored" data-anchor-id="mask-combination-parameters">6. Mask Combination Parameters</h2>
+<section id="mask_contribution" class="level3">
+<h3 class="anchored" data-anchor-id="mask_contribution">6.1 <code>mask_contribution</code></h3>
+<ul>
+<li><strong>Role:</strong> Weight of the continuous mask in the final combination.</li>
+<li><strong>Default:</strong> <code>0.7</code></li>
+<li><strong>Test Value:</strong> <code>1.0</code></li>
+<li><strong>Effect:</strong> Higher values emphasize ridge-based masking; lower values reduce continuous mask influence.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="parameter_denoise_comparison/mask_contribution/mask_contribution_comparison.png" class="img-fluid figure-img"></p>
+<figcaption>mask_contribution comparison</figcaption>
+</figure>
+</div>
+<p align="center">
+<em>Comparison: <code>mask_contribution=0.7</code> (Default) vs.&nbsp;<code>mask_contribution=1.0</code> (Modified)</em>
+</p>
+</section>
+<section id="mask_peak_contribution" class="level3">
+<h3 class="anchored" data-anchor-id="mask_peak_contribution">6.2 <code>mask_peak_contribution</code></h3>
+<ul>
+<li><strong>Role:</strong> Weight of the peak mask in the final combination.</li>
+<li><strong>Default:</strong> <code>0.3</code></li>
+<li><strong>Test Value:</strong> <code>1.0</code></li>
+<li><strong>Effect:</strong> Higher values emphasize peak-based masking; lower values reduce peak mask influence.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="parameter_denoise_comparison/mask_peak_contribution/mask_peak_contribution_comparison.png" class="img-fluid figure-img"></p>
+<figcaption>mask_peak_contribution comparison</figcaption>
+</figure>
+</div>
+<p align="center">
+<em>Comparison: <code>mask_peak_contribution=0.3</code> (Default) vs.&nbsp;<code>mask_peak_contribution=1.0</code> (Modified)</em>
+</p>
+<hr>
+</section>
+</section>
+<section id="mask-post-processing-parameters" class="level2">
+<h2 class="anchored" data-anchor-id="mask-post-processing-parameters">7. Mask Post-Processing Parameters</h2>
+<section id="mask_smoothing" class="level3">
+<h3 class="anchored" data-anchor-id="mask_smoothing">7.1 <code>mask_smoothing</code></h3>
+<ul>
+<li><strong>Role:</strong> Enable/disable temporal smoothing of the combined mask.</li>
+<li><strong>Default:</strong> <code>True</code></li>
+<li><strong>Test Value:</strong> <code>False</code></li>
+<li><strong>Effect:</strong> Smoothing creates more natural transitions; disabling preserves sharp mask edges.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="parameter_denoise_comparison/mask_smoothing/mask_smoothing_comparison.png" class="img-fluid figure-img"></p>
+<figcaption>mask_smoothing comparison</figcaption>
+</figure>
+</div>
+<p align="center">
+<em>Comparison: <code>mask_smoothing=True</code> (Default) vs.&nbsp;<code>mask_smoothing=False</code> (Modified)</em>
+</p>
+</section>
+<section id="mask_smooth_window" class="level3">
+<h3 class="anchored" data-anchor-id="mask_smooth_window">7.2 <code>mask_smooth_window</code></h3>
+<ul>
+<li><strong>Role:</strong> Window size for mask smoothing (when enabled).</li>
+<li><strong>Default:</strong> <code>5</code></li>
+<li><strong>Test Value:</strong> <code>15</code></li>
+<li><strong>Effect:</strong> Larger windows create smoother mask transitions; smaller windows preserve temporal detail.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="parameter_denoise_comparison/mask_smooth_window/mask_smooth_window_comparison.png" class="img-fluid figure-img"></p>
+<figcaption>mask_smooth_window comparison</figcaption>
+</figure>
+</div>
+<p align="center">
+<em>Comparison: <code>mask_smooth_window=5</code> (Default) vs.&nbsp;<code>mask_smooth_window=15</code> (Modified)</em>
+</p>
+<hr>
+</section>
+</section>
+<section id="best-practices-tuning-tips" class="level2">
+<h2 class="anchored" data-anchor-id="best-practices-tuning-tips">8. Best Practices &amp; Tuning Tips</h2>
+<section id="parameter-tuning-strategy" class="level3">
+<h3 class="anchored" data-anchor-id="parameter-tuning-strategy">Parameter Tuning Strategy</h3>
+<ol type="1">
+<li><strong>Start with Activity Detection</strong>: Adjust <code>power_threshold_db</code> and <code>min_segment_length</code> to identify relevant audio segments</li>
+<li><strong>Refine Ridge Detection</strong>: Set <code>drop_db_threshold</code> and <code>freq_jump_threshold</code> for stable frequency tracking</li>
+<li><strong>Optimize Bandwidth Control</strong>: Tune <code>min_bandwidth</code>, <code>max_bandwidth</code>, and <code>bandwidth_smooth_window</code> for frequency coverage</li>
+<li><strong>Balance Mask Components</strong>: Adjust <code>alpha</code>, <code>keep_ratio</code>, <code>mask_contribution</code>, and <code>mask_peak_contribution</code> for optimal noise removal</li>
+<li><strong>Fine-tune Post-processing</strong>: Set <code>mask_smoothing</code> and <code>mask_smooth_window</code> for natural transitions</li>
+</ol>
+</section>
+<section id="parameter-groups" class="level3">
+<h3 class="anchored" data-anchor-id="parameter-groups">Parameter Groups</h3>
+<ul>
+<li><strong>Core Ridge Parameters</strong>: <code>alpha</code>, <code>keep_ratio</code>, <code>soft_alpha</code></li>
+<li><strong>Peak Detection</strong>: <code>num_peaks</code>, <code>peak_width_hz</code><br>
+</li>
+<li><strong>Activity Detection</strong>: <code>power_threshold_db</code>, <code>min_segment_length</code></li>
+<li><strong>Ridge Reliability</strong>: <code>drop_db_threshold</code>, <code>freq_jump_threshold</code></li>
+<li><strong>Bandwidth Control</strong>: <code>min_bandwidth</code>, <code>max_bandwidth</code>, <code>bandwidth_smooth_window</code></li>
+<li><strong>Mask Combination</strong>: <code>mask_contribution</code>, <code>mask_peak_contribution</code></li>
+<li><strong>Post-processing</strong>: <code>mask_smoothing</code>, <code>mask_smooth_window</code></li>
+</ul>
+</section>
+<section id="common-use-cases" class="level3">
+<h3 class="anchored" data-anchor-id="common-use-cases">Common Use Cases</h3>
+<ul>
+<li><strong>High SNR Mouse Calls</strong>: Lower <code>power_threshold_db</code>, higher <code>keep_ratio</code></li>
+<li><strong>Noisy Recordings</strong>: Higher <code>power_threshold_db</code>, lower <code>alpha</code></li>
+<li><strong>Harmonic Calls</strong>: Increase <code>num_peaks</code> and <code>peak_width_hz</code></li>
+<li><strong>Transient Sounds</strong>: Disable <code>mask_smoothing</code>, lower <code>min_segment_length</code></li>
+</ul>
+</section>
+<section id="performance-notes" class="level3">
+<h3 class="anchored" data-anchor-id="performance-notes">Performance Notes</h3>
+<ul>
+<li>All comparison images show: Original (top), Default parameters (middle), Modified parameters (bottom)</li>
+<li>Images generated from <code>/Users/mz/Desktop/MS_B/mice/mouse_natural_sentence.wav</code></li>
+<li>Generated using the <code>contract parameters.py</code> script</li>
+</ul>
+<hr>
+<p><em>End of Parameter Guide</em></p>
+</section>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
